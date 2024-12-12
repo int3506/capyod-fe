@@ -6,6 +6,7 @@ import LoginModal from "./LoginModal";
 import SignUpModal from "./SignUpModal";
 import { AuthContext } from "../contexts/AuthContext";
 import Lenna from "../assets/Lenna.png";
+import LoginRequired from "./LoginRequired";
 
 const Navbar = () => {
   const { isLoggedIn, userID, handleLogout, setIsLoggedIn } =
@@ -23,6 +24,7 @@ const Navbar = () => {
   const menuItems = [
     { label: "Catalog", href: "/products" },
     { label: "Pricing", href: "/pricing" },
+    { label: "Users", href: "/users" },
     { label: "Your Store", href: "/store" },
     // { label: "Use Case", href: "/browse" },
   ];
@@ -56,12 +58,22 @@ const Navbar = () => {
             </a>
           </h1>
         </div>
-        <ul className="flex font-medium items-center gap-8 text-gray-600">
+        <ul className="flex font-medium items-center gap-8 text-gray-600 flex-grow ml-20">
           {menuItems.map((item) => (
             <li key={item.label}>
-              <a href={item.href} className="hover:text-[#39b75d]">
-                {item.label}
-              </a>
+              {item.href === "/store" ? (
+                <LoginRequired
+                  onSuccess={() => navigate(item.href)} // Điều hướng nếu đăng nhập
+                >
+                  <span className="hover:text-[#39b75d] cursor-pointer">
+                    {item.label}
+                  </span>
+                </LoginRequired>
+              ) : (
+                <a href={item.href} className="hover:text-[#39b75d]">
+                  {item.label}
+                </a>
+              )}
             </li>
           ))}
           {Object.keys(dropdownItems).map((key) => (
@@ -123,10 +135,7 @@ const Navbar = () => {
       {isLoginModalOpen && (
         <LoginModal
           onClose={() => toggleModal("login", false)}
-          onLoginSuccess={(token) => {
-            sessionStorage.setItem("accessToken", token);
-            setIsLoggedIn(true);
-          }}
+          onLoginSuccess={() => setIsLoggedIn(true)}
         />
       )}
       {isSignUpModalOpen && (

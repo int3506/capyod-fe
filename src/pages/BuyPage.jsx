@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import DesignPage from "./DesignPage";
+import Cookies from "js-cookie";
 
 const BuyPage = ({ isPreview = false, buyItem = false }) => {
   const { id } = useParams();
@@ -17,7 +18,7 @@ const BuyPage = ({ isPreview = false, buyItem = false }) => {
         try {
           const response = await fetch(`http://localhost:5000/orders/${id}`, {
             headers: {
-              Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+              Authorization: `Bearer ${Cookies.get("accessToken")}`,
             },
           });
 
@@ -58,7 +59,7 @@ const BuyPage = ({ isPreview = false, buyItem = false }) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          Authorization: `Bearer ${Cookies.get("accessToken")}`,
         },
         body: JSON.stringify(orderData),
       });
