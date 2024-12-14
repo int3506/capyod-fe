@@ -1,33 +1,29 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Search, Plus } from "lucide-react";
 import no_product from "../../assets/logo192.png";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../contexts/AuthContext";
 import ProductItem from "./product/ProductItem";
-import Cookies from "js-cookie";
+import LoginRequired from "../LoginRequired";
 
-const MyProducts = () => {
+const ProductsUser = ({ userID }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectAll, setSelectAll] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState([]);
-  const { userID } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const fetchProducts = async () => {
-    const token = Cookies.get("accessToken");
-    if (!token) return;
     try {
-      const response = await fetch(`http://localhost:5000/order-items/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `http://localhost:5000/order-items/user/${userID}`
+      );
       if (!response.ok) {
         throw new Error("Failed to fetch products");
       }
-      const data = await response.json();
-      setProducts(data);
+
+      const products = await response.json();
+
+      setProducts(products);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -36,7 +32,7 @@ const MyProducts = () => {
   };
 
   useEffect(() => {
-    if (userID) fetchProducts();
+    fetchProducts();
   }, [userID]);
 
   const handleSelectAll = () => {
@@ -60,14 +56,13 @@ const MyProducts = () => {
     <div className="p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">My Products</h1>
-        <button
-          className="bg-[#2F3321] text-white px-6 py-3 rounded-lg flex items-center gap-3 hover:bg-[#3D442A] transition duration-300 shadow-md"
-          onClick={() => navigate("create")}
-        >
-          <Plus size={20} className="text-white" />
-          <span className="text-sm font-semibold">Create Products</span>
-        </button>
+        <h1 className="text-2xl font-bold">All user's products</h1>
+        {/* <LoginRequired onSuccess={() => navigate("/store/products/create")}>
+          <button className="bg-[#2F3321] text-white px-6 py-3 rounded-lg flex items-center gap-3 hover:bg-[#3D442A] transition duration-300 shadow-md">
+            <Plus size={20} className="text-white" />
+            <span className="text-sm font-semibold">Create Products</span>
+          </button>
+        </LoginRequired> */}
       </div>
 
       {/* Search and Filters */}
@@ -98,8 +93,8 @@ const MyProducts = () => {
                     onChange={handleSelectAll}
                   />
                 </th>
-                <th className="p-4 text-center">Preview</th>
-                <th className="p-4 text-center">Details</th>
+                <th className="p-4">Image</th>
+                <th className="p-4">Details</th>
                 <th className="p-4 text-center">Inventory</th>
                 <th className="p-4 text-center">Status</th>
                 <th className="p-4 text-center">Actions</th>
@@ -113,7 +108,7 @@ const MyProducts = () => {
                   isSelected={selectedProducts.includes(product.id)}
                   onSelect={handleSelectProduct}
                   onUpdate={fetchProducts}
-                  canEdit={true}
+                  canEdit={false}
                 />
               ))}
             </tbody>
@@ -130,12 +125,11 @@ const MyProducts = () => {
             <h3 className="text-xl font-semibold mb-4">
               No products created yet
             </h3>
-            <button
-              className="bg-[#2F3321] text-white px-6 py-3 rounded hover:bg-[#3F4329]"
-              onClick={() => navigate("create")}
-            >
-              Create Products
-            </button>
+            {/* <LoginRequired onSuccess={() => navigate("/store/products/create")}>
+              <button className="bg-[#2F3321] text-white px-6 py-3 rounded hover:bg-[#3F4329]">
+                Create Products
+              </button>
+            </LoginRequired> */}
           </div>
         )}
       </div>
@@ -143,4 +137,4 @@ const MyProducts = () => {
   );
 };
 
-export default MyProducts;
+export default ProductsUser;

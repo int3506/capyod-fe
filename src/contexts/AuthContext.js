@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
+import Cookies from "js-cookie";
 
 export const AuthContext = createContext();
 
@@ -7,7 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [userID, setUserID] = useState("");
 
   useEffect(() => {
-    const token = sessionStorage.getItem("accessToken");
+    const token = Cookies.get("accessToken");
     if (token) {
       fetchUserProfile(token);
     }
@@ -36,7 +37,9 @@ export const AuthProvider = ({ children }) => {
   const handleLogout = () => {
     setIsLoggedIn(false);
     setUserID("");
-    sessionStorage.removeItem("accessToken");
+    Cookies.remove("accessToken", { path: "/" });
+    console.log(Cookies.get("accessToken"));
+    console.log("Logged out");
   };
 
   return (

@@ -7,6 +7,7 @@ import hoodieFrontImage from "../assets/store/front_hoodie.png";
 import hoodieBackImage from "../assets/store/back_hoodie.png";
 import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
+import Cookies from "js-cookie";
 
 const DesignPage = ({ isPreview = false, idx = null }) => {
   const params = useParams(); // Lấy ID từ URL khi chỉnh sửa
@@ -36,7 +37,7 @@ const DesignPage = ({ isPreview = false, idx = null }) => {
           const orderResponse = await fetch(orderUrl, {
             // method: "GET",
             headers: {
-              Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+              Authorization: `Bearer ${Cookies.get("accessToken")}`,
               // "id": id,
             },
           });
@@ -53,7 +54,7 @@ const DesignPage = ({ isPreview = false, idx = null }) => {
           // const productResponse = await fetch(productUrl, {
           //   method: "GET",
           //   headers: {
-          //     Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          //     Authorization: `Bearer ${Cookies.get("accessToken")}`,
           //     // id: orderData.product.id,
           //   },
           // });
@@ -188,7 +189,7 @@ const DesignPage = ({ isPreview = false, idx = null }) => {
       return;
     }
 
-    const token = sessionStorage.getItem("accessToken");
+    const token = Cookies.get("accessToken");
 
     try {
       const productFormData = new FormData();

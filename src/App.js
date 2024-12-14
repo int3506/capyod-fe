@@ -8,6 +8,7 @@ import TranferProducts from "./pages/TranferProducts";
 import ProfilePage from "./pages/ProfilePage";
 import Dashboard from "./components/store-components/Dashboard";
 import MyProducts from "./components/store-components/MyProducts";
+import Products from "./components/store-components/Products";
 import MyOrders from "./components/store-components/MyOrders";
 import PaymentsPage from "./components/store-components/wallet/PaymentsPage";
 import PaymentsDetails from "./components/store-components/wallet/PaymentsDetails";
@@ -21,6 +22,7 @@ import Header from "./components/Catalog/Header";
 import DesignPage from "./pages/DesignPage";
 import { AuthProvider } from "./contexts/AuthContext";
 import BuyPage from "./pages/BuyPage";
+import UsersPage from "./pages/UsersPage";
 
 function App() {
   return (
@@ -28,9 +30,13 @@ function App() {
       <Router>
         <div>
           <Routes>
-            <Route path="/" element={<Homepage />} /> {/* Trang chủ */}
+            <Route path="/" element={<Homepage />} />
+            <Route path="/home" element={<Homepage />} />
+            <Route path="/users" element={<UsersPage />} />
+            {/* <Route path="/*" element={<Navigate to="home" replace />} /> */}
             <Route path="/store" element={<StorePage />}>
-              <Route path="dashboard" element={<Dashboard />} />
+              <Route index element={<Navigate to="products" replace />} />
+              {/* <Route path="dashboard" element={<Dashboard />} />
               <Route
                 path="catalog"
                 element={
@@ -41,14 +47,23 @@ function App() {
                     <HotNewProducts />
                   </div>
                 }
-              />
+              /> */}
               <Route path="products" element={<MyProducts />} />
               <Route path="products/create" element={<DesignPage />} />
-              <Route path="products/preview/:id" element={<DesignPage isPreview={true}/>} />
+              <Route
+                path="products/preview/:id"
+                element={<DesignPage isPreview={true} />}
+              />
               <Route path="products/edit/:id" element={<DesignPage />} />
-              <Route path="products/buy/:id" element={<BuyPage buyItem={true}/>} />
-              <Route path="orders/info/:id" element={<BuyPage isPreview={true}/>} />
-              <Route path="orders/edit/:id" element={<BuyPage/>} />
+              <Route
+                path="products/buy/:id"
+                element={<BuyPage buyItem={true} />}
+              />
+              <Route
+                path="orders/info/:id"
+                element={<BuyPage isPreview={true} />}
+              />
+              <Route path="orders/edit/:id" element={<BuyPage />} />
               <Route path="orders" element={<MyOrders />} />
               <Route path="wallet" element={<PaymentsPage />}>
                 <Route path="details" element={<PaymentsDetails />} />
@@ -56,12 +71,15 @@ function App() {
                 <Route path="withdrawals" element={<Withdrawals />} />
                 <Route path="*" element={<Navigate to="details" replace />} />
               </Route>
-              <Route path="*" element={<Navigate to="dashboard" replace />} />
+              <Route path="*" element={<Navigate to="products" replace />} />
             </Route>
             <Route path="/pricing" element={<PricingPage />} />
-            <Route path="/products" element={<ProductPage />} />
+            <Route path="/products" element={<ProductPage />}>
+              <Route path=":productType" element={<Products />} />
+            </Route>
             <Route path="/TranferProducts" element={<TranferProducts />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile/:id" element={<ProfilePage />} />
           </Routes>
         </div>
       </Router>

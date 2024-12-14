@@ -4,17 +4,23 @@ import no_product from "../../assets/logo192.png";
 import { AuthContext } from "../../contexts/AuthContext";
 import OrderItem from "./product/OrderItem";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const MyOrders = () => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
+  const [selectedProducts, setSelectedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const { userID } = useContext(AuthContext);
 
   const fetchOrders = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/orders/user/${userID}`
+        `http://localhost:5000/orders/me`, {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("accessToken")}`,
+          }},
       );
       if (!response.ok) {
         throw new Error("Failed to fetch orders");
@@ -32,6 +38,23 @@ const MyOrders = () => {
   useEffect(() => {
     if (userID) fetchOrders();
   }, [userID]);
+
+  const handleSelectAll = () => {
+    setSelectAll(!selectAll);
+    if (!selectAll) {
+      setSelectedProducts(orders.map((order) => order.id));
+    } else {
+      setSelectedProducts([]);
+    }
+  };
+
+  const handleSelectProduct = (id) => {
+    setSelectedProducts((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((productId) => productId !== id)
+        : [...prevSelected, id]
+    );
+  };
 
   return (
     <div className="p-6">
@@ -66,22 +89,32 @@ const MyOrders = () => {
           />
         </div>
 
-        {/* Table Header */}
-        <div className="flex items-center gap-4 py-4 px-2 text-gray-600">
-          <div className="flex-1">Order</div>
-          <div className="flex-1">Details</div>
-          <div className="flex-1">Status</div>
-        </div>
-
         {/* Orders List */}
         {loading ? (
           <div className="text-center py-12">Loading...</div>
         ) : orders.length > 0 ? (
-          <div>
+          <table className="w-full table-auto border-collapse">
+            <thead>
+              <tr className="bg-gray-100 text-left">
+                <th className="p-4 text-center">
+                  <input
+                    type="checkbox"
+                    checked={selectAll}
+                    onChange={handleSelectAll}
+                  />
+                </th>
+                <th className="p-4 text-center">Order</th>
+                <th className="p-4 text-center">Details</th>
+                <th className="p-4 text-center">Status</th>
+                <th className="p-4 text-center"></th>
+              </tr>
+            </thead>
+            <tbody>
             {orders.map((order) => (
-              <OrderItem key={order.id} order={order} onUpdate={fetchOrders}/>
+              <OrderItem key={order.id} order={order} onUpdate={fetchOrders} isSelected={selectedProducts.includes(order.id)} onSelect={handleSelectProduct}/>
             ))}
-          </div>
+            </tbody>
+          </table>
         ) : (
           <div className="text-center py-12">
             <div className="mb-4 mx-auto w-48 h-48 flex items-center justify-center">
